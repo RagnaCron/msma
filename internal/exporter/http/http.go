@@ -2,10 +2,10 @@
 package exporter
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/ragnacron/msma/internal/model"
 )
@@ -23,17 +23,15 @@ func New(endpoint string) *HTTPExporter {
 }
 
 func (h *HTTPExporter) Export(metrics []model.Metric) error {
-	data, err := json.Marshal(metrics)
-	if err != nil {
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(metrics); err != nil {
 		return err
 	}
 
-	r := strings.NewReader(string(data))
-	req, err := http.NewRequest("POST", h.Endpoint, r)
+	req, err := http.NewRequest("POST", h.Endpoint, &buf)
 	if err != nil {
 		return err
 	}
-	defer req.Body.Close()
 
 	req.Header.Set("Content-Type", "application/json")
 
