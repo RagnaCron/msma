@@ -22,6 +22,10 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
+	if err := Validate(cfg); err != nil {
+		return nil, err
+	}
+
 	return cfg, nil
 }
 
