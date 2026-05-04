@@ -2,7 +2,6 @@
 package exporter
 
 import (
-	"bufio"
 	"encoding/json"
 	"os"
 
@@ -15,20 +14,16 @@ func New() *StdoutExporter {
 	return &StdoutExporter{}
 }
 
-func (*StdoutExporter) Export(metrics []model.Metric) error {
+func (e *StdoutExporter) Export(metrics []model.Metric) error {
 	data, err := json.Marshal(metrics)
 	if err != nil {
 		return err
 	}
 
-	buffer := bufio.NewWriter(os.Stdout)
-	if _, err := buffer.Write(data); err != nil {
+	if _, err := os.Stdout.Write(data); err != nil {
 		return err
 	}
-	if err := buffer.WriteByte('\n'); err != nil {
-		return err
-	}
-	if err := buffer.Flush(); err != nil {
+	if _, err := os.Stdout.Write([]byte("\n")); err != nil {
 		return err
 	}
 
