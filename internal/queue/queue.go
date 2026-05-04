@@ -7,7 +7,7 @@ type Queue struct {
 	ch chan model.Metric
 }
 
-func NewQueue(size int) *Queue {
+func New(size int) *Queue {
 	return &Queue{ch: make(chan model.Metric, size)}
 }
 
