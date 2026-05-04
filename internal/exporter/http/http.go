@@ -1,0 +1,50 @@
+// Package exporter
+package exporter
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
+
+	"github.com/ragnacron/msma/internal/model"
+)
+
+type HTTPExporter struct {
+	Endpoint string
+	Client   *http.Client
+}
+
+func New(endpoint string) *HTTPExporter {
+	return &HTTPExporter{
+		Endpoint: endpoint,
+		Client:   &http.Client{},
+	}
+}
+
+func (h *HTTPExporter) Export(metrics []model.Metric) error {
+	data, err := json.Marshal(metrics)
+	if err != nil {
+		return err
+	}
+
+	r := strings.NewReader(string(data))
+	req, err := http.NewRequest("POST", h.Endpoint, r)
+	if err != nil {
+		return err
+	}
+	defer req.Body.Close()
+
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := h.Client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		return fmt.Errorf("error status code: %d", res.StatusCode)
+	}
+
+	return nil
+}
