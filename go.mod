@@ -3,8 +3,8 @@ module github.com/ragnacron/msma
 go 1.26.2
 
 require (
-	github.com/shirou/gopsutil/v4 v4.26.4
-	go.yaml.in/yaml/v4 v4.0.0-rc.4
+	github.com/shirou/gopsutil/v4 v4.26.4 // direct
+	go.yaml.in/yaml/v4 v4.0.0-rc.4 // direct
 )
 
 require (

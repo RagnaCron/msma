@@ -8,18 +8,22 @@ import (
 	"github.com/ragnacron/msma/internal/model"
 )
 
-type Collector struct{} // Hostname?
+type Collector struct {
+	Host string
+} // Hostname?
 
-func New() *Collector {
-	return &Collector{}
+func New() (*Collector, error) {
+	host, err := os.Hostname()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Collector{
+		Host: host,
+	}, nil
 }
 
 func (c *Collector) Collect() (model.Metric, error) {
-	host, err := os.Hostname()
-	if err != nil {
-		return model.Metric{}, err
-	}
-
 	payload, err := gatherMetricsPayload()
 	if err != nil {
 		return model.Metric{}, err
@@ -27,7 +31,7 @@ func (c *Collector) Collect() (model.Metric, error) {
 
 	return model.Metric{
 		Timestamp: time.Now().UTC(),
-		Host:      host,
+		Host:      c.Host,
 		Metrics:   payload,
 	}, nil
 }
@@ -38,7 +42,7 @@ func gatherMetricsPayload() (model.MetricsPayload, error) {
 		return model.MetricsPayload{}, err
 	}
 
-	memory, err := getMemoryMetric()
+	memory, err := getMemoryMetrics()
 	if err != nil {
 		return model.MetricsPayload{}, err
 	}
@@ -48,7 +52,7 @@ func gatherMetricsPayload() (model.MetricsPayload, error) {
 		return model.MetricsPayload{}, err
 	}
 
-	sysInfo, err := getSystemInfoMetric()
+	sysInfo, err := getSystemInfoMetrics()
 	if err != nil {
 		return model.MetricsPayload{}, err
 	}

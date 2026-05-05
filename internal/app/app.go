@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/ragnacron/msma/internal/collector"
 	"github.com/ragnacron/msma/internal/config"
 	"github.com/ragnacron/msma/internal/exporter"
 	"github.com/ragnacron/msma/internal/exporter/http"
@@ -42,6 +43,10 @@ func New(cfg *config.Config) *App {
 }
 
 func (a *App) Run() error {
+	col, err := collector.New()
+	if err != nil {
+		return err
+	}
 	ch := a.Queue.Channel()
 	var wgExporter sync.WaitGroup
 	var wgCollector sync.WaitGroup
@@ -66,11 +71,14 @@ func (a *App) Run() error {
 	wgCollector.Go(func() { // Collector goroutine
 		defer ticker.Stop()
 		for {
-			metric := model.Metric{}
 			select {
 			case <-stop:
 				return
 			case <-ticker.C:
+				metric, err := col.Collect()
+				if err != nil {
+					continue // or should we fail completly...
+				}
 				select {
 				case ch <- metric:
 				default:
