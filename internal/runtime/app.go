@@ -2,6 +2,7 @@
 package runtime
 
 import (
+	"log"
 	"os"
 	"os/signal"
 	"sync"
@@ -56,18 +57,15 @@ func (a *App) Run() error {
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 	defer signal.Stop(sigCh)
 
-	wgExporter.Add(1)
 	wgExporter.Go(func() { // Exporter goroutine
 		for metric := range ch {
-			// todo: this will need some loggin at some point in time
-			// error is currently droped
-			_ = a.Exporter.Export([]model.Metric{metric})
+			if err := a.Exporter.Export([]model.Metric{metric}); err != nil {
+				log.Printf("export failed: %v\n", err)
+			}
 		}
 	})
 
 	ticker := time.NewTicker(time.Duration(a.Config.IntervalSeconds) * time.Second)
-
-	wgCollector.Add(1)
 	wgCollector.Go(func() { // Collector goroutine
 		defer ticker.Stop()
 		for {
@@ -77,20 +75,22 @@ func (a *App) Run() error {
 			case <-ticker.C:
 				metric, err := col.Collect()
 				if err != nil {
-					continue // or should we fail completly...
+					continue
 				}
 				select {
 				case ch <- metric:
 				default:
-					// DROP (todo: loggin will be a thing at one point in time)
+					log.Println("metric dropped: queue full")
 				}
 			}
 		}
 	})
 
 	<-sigCh // Block
+	log.Println("shutdown signal received")
 
 	close(stop) // Stop Collector
+	log.Println("draining queue...")
 	wgCollector.Wait()
 
 	close(ch) // Stop Channel
@@ -105,6 +105,7 @@ func (a *App) Run() error {
 	case <-time.After(5 * time.Second):
 		// timeout -> exit anyway
 	}
+	log.Println("shutdown complete")
 
 	return nil
 }
