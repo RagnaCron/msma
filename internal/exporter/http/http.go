@@ -15,7 +15,7 @@ type HTTPExporter struct {
 	Client   *http.Client
 }
 
-func New(endpoint string) *HTTPExporter {
+func NewHTTP(endpoint string) *HTTPExporter {
 	return &HTTPExporter{
 		Endpoint: endpoint,
 		Client:   &http.Client{},
@@ -23,12 +23,13 @@ func New(endpoint string) *HTTPExporter {
 }
 
 func (h *HTTPExporter) Export(metrics []model.Metric) error {
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(metrics); err != nil {
+	data, err := json.Marshal(metrics)
+	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequest("POST", h.Endpoint, &buf)
+	r := bytes.NewReader(data)
+	req, err := http.NewRequest("POST", h.Endpoint, r)
 	if err != nil {
 		return err
 	}
