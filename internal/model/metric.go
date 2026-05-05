@@ -23,9 +23,10 @@ type CPU struct {
 }
 
 type Memory struct {
-	Total uint64 `json:"total"`
-	Used  uint64 `json:"used"`
-	Free  uint64 `json:"free"`
+	Total       uint64  `json:"total"`
+	Used        uint64  `json:"used"`
+	UsedPercent float64 `json:"used_percent"`
+	Free        uint64  `json:"free"`
 }
 
 type Disk struct {
