@@ -1,5 +1,5 @@
-// Package exporter
-package exporter
+// Package stdout
+package stdout
 
 import (
 	"encoding/json"

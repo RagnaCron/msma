@@ -1,5 +1,5 @@
-// Package exporter
-package exporter
+// Package http
+package http
 
 import (
 	"bytes"
