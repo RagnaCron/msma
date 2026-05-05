@@ -1,5 +1,5 @@
-// Package app
-package app
+// Package runtime
+package runtime
 
 import (
 	"os"
