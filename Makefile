@@ -21,4 +21,4 @@ run:
 	go run .
 
 clean:
-	rm -f msma
+	go clean
