@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26'
+          cache: true
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Format check
+        run: |
+          gofmt -l -s -d .
+          if [ -n "$(gofmt -l -s .)" ]; then
+            echo "ERROR: files are not gofmt-ed"
+            exit 1
+          fi
+
+      - name: Run vet
+        run: make vet
+
+      - name: Run tests
+        run: make test
+
+      - name: Build
+        run: make build
