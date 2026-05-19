@@ -23,7 +23,7 @@ func TestExport(t *testing.T) {
 	}))
 	defer server.Close()
 
-	exporter := NewHTTP(server.URL)
+	exporter := NewHTTP(server.URL, 10)
 	err := exporter.Export([]model.Metric{{Host: "test"}})
 	if err != nil {
 		t.Fatalf("Export() failed: %v", err)
@@ -40,7 +40,7 @@ func TestExportError(t *testing.T) {
 	}))
 	defer server.Close()
 
-	exporter := NewHTTP(server.URL)
+	exporter := NewHTTP(server.URL, 10)
 	err := exporter.Export([]model.Metric{{Host: "test"}})
 	if err == nil {
 		t.Fatal("expected error, got nil")
@@ -48,7 +48,7 @@ func TestExportError(t *testing.T) {
 }
 
 func TestExportInvalidURL(t *testing.T) {
-	exporter := NewHTTP("://invalid-url")
+	exporter := NewHTTP("://invalid-url", 10)
 	err := exporter.Export([]model.Metric{{Host: "test"}})
 	if err == nil {
 		t.Fatal("expected error, got nil")

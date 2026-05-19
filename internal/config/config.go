@@ -14,4 +14,5 @@ type ExporterConfig struct {
 
 type HTTPConfig struct {
 	Endpoint string `yaml:"endpoint"`
+	Timeout  int64  `yaml:"timeout"`
 }

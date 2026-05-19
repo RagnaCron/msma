@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/ragnacron/msma/internal/model"
 )
@@ -15,10 +16,12 @@ type HTTPExporter struct {
 	Client   *http.Client
 }
 
-func NewHTTP(endpoint string) *HTTPExporter {
+func NewHTTP(endpoint string, timeout int64) *HTTPExporter {
 	return &HTTPExporter{
 		Endpoint: endpoint,
-		Client:   &http.Client{},
+		Client: &http.Client{
+			Timeout: time.Duration(timeout * int64(time.Second)),
+		},
 	}
 }
 

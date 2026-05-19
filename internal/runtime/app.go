@@ -31,7 +31,7 @@ func New(cfg *config.Config) *App {
 	case "stdout":
 		e = stdout.New()
 	case "http":
-		e = http.NewHTTP(cfg.Exporter.HTTP.Endpoint)
+		e = http.NewHTTP(cfg.Exporter.HTTP.Endpoint, cfg.Exporter.HTTP.Timeout)
 	default:
 		panic("unsupported exporter type") // todo: return error in New -> App
 	}

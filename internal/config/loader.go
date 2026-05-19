@@ -76,5 +76,13 @@ func applyEnvOverrides(cfg *Config) error {
 		cfg.Exporter.HTTP.Endpoint = endpoint
 	}
 
+	if timeout := os.Getenv("AGENT_HTTP_TIMEOUT"); timeout != "" {
+		integer, err := strconv.Atoi(timeout)
+		if err != nil {
+			return err
+		}
+		cfg.Exporter.HTTP.Timeout = int64(integer)
+	}
+
 	return nil
 }
