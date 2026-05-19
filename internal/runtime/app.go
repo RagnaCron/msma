@@ -2,6 +2,7 @@
 package runtime
 
 import (
+	"errors"
 	"log"
 	"os"
 	"os/signal"
@@ -24,7 +25,7 @@ type App struct {
 	Exporter exporter.Exporter
 }
 
-func New(cfg *config.Config) *App {
+func New(cfg *config.Config) (*App, error) {
 	var e exporter.Exporter
 
 	switch cfg.Exporter.Type {
@@ -33,14 +34,14 @@ func New(cfg *config.Config) *App {
 	case "http":
 		e = http.NewHTTP(cfg.Exporter.HTTP.Endpoint, cfg.Exporter.HTTP.Timeout)
 	default:
-		panic("unsupported exporter type") // todo: return error in New -> App
+		return nil, errors.New("unsupported exporter type")
 	}
 
 	return &App{
 		Config:   cfg,
 		Queue:    queue.New(cfg.QueueSize),
 		Exporter: e,
-	}
+	}, nil
 }
 
 func (a *App) Run() error {

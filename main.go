@@ -15,7 +15,10 @@ func main() {
 		log.Fatalln(fmt.Errorf("error loading config: %w", err))
 	}
 
-	app := runtime.New(cfg)
+	app, err := runtime.New(cfg)
+	if err != nil {
+		log.Fatalln(fmt.Errorf("error starting runtime: %w", err))
+	}
 	err = app.Run()
 	if err != nil {
 		log.Fatalln(fmt.Errorf("error running app: %w", err))
