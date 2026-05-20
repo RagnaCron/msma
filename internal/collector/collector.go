@@ -26,22 +26,23 @@ func New() (*Collector, error) {
 	}, nil
 }
 
-func (c *Collector) Collect() (model.Metric, error) {
-	payload, err := collectMetrics()
-	if err != nil {
-		return model.Metric{}, err
-	}
-
-	return model.Metric{
+func (c *Collector) Collect() (*model.Metric, error) {
+	metric := &model.Metric{
 		Timestamp: time.Now().UTC(),
 		Host:      c.Host,
-		Metrics:   *payload,
-	}, nil
+	}
+
+	err := collectMetrics(metric)
+	if err != nil {
+		return metric, err
+	}
+
+	return metric, nil
 }
 
 type collector struct {
 	name string
-	fn   func(*model.MetricsPayload) error
+	fn   func(*model.Metric) error
 }
 
 type collectorError struct {
@@ -63,19 +64,18 @@ func (e *MetricsError) Error() string {
 	return "metric collection failures: " + strings.Join(parts, ", ")
 }
 
-func collectMetrics() (*model.MetricsPayload, error) {
+func collectMetrics(m *model.Metric) error {
 	var (
-		wg     sync.WaitGroup
-		mu     sync.Mutex
-		metric model.MetricsPayload
-		errs   []collectorError
+		wg   sync.WaitGroup
+		mu   sync.Mutex
+		errs []collectorError
 	)
 
 	collectors := getCollectors()
 
 	for _, c := range collectors {
 		wg.Go(func() {
-			err := c.fn(&metric)
+			err := c.fn(m)
 
 			mu.Lock()
 			defer mu.Unlock()
@@ -95,12 +95,18 @@ func collectMetrics() (*model.MetricsPayload, error) {
 	successes := len(collectors) - len(errs)
 
 	if successes == 0 {
-		return nil, &MetricsError{
+		return &MetricsError{
 			errs: errs,
 		}
 	}
 
-	return &metric, nil
+	if successes < len(collectors) {
+		return &MetricsError{
+			errs: errs,
+		}
+	}
+
+	return nil
 }
 
 func getCollectors() []collector {
@@ -124,7 +130,7 @@ func getCollectors() []collector {
 	}
 }
 
-func collectCPU(m *model.MetricsPayload) error {
+func collectCPU(m *model.Metric) error {
 	cpu, err := getCPUMetrics()
 	if err != nil {
 		return err
@@ -135,7 +141,7 @@ func collectCPU(m *model.MetricsPayload) error {
 	return nil
 }
 
-func collectMem(m *model.MetricsPayload) error {
+func collectMem(m *model.Metric) error {
 	memory, err := getMemoryMetrics()
 	if err != nil {
 		return err
@@ -146,7 +152,7 @@ func collectMem(m *model.MetricsPayload) error {
 	return nil
 }
 
-func collectDisk(m *model.MetricsPayload) error {
+func collectDisk(m *model.Metric) error {
 	disk, err := getDiskMetrics()
 	if err != nil {
 		return err
@@ -157,7 +163,7 @@ func collectDisk(m *model.MetricsPayload) error {
 	return nil
 }
 
-func collectSysInfo(m *model.MetricsPayload) error {
+func collectSysInfo(m *model.Metric) error {
 	sysInfo, err := getSystemInfoMetrics()
 	if err != nil {
 		return err

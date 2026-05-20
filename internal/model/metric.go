@@ -6,15 +6,11 @@ import "time"
 type Metric struct {
 	Timestamp time.Time         `json:"timestamp"`
 	Host      string            `json:"host"`
-	Metrics   MetricsPayload    `json:"metrics"`
+	CPU       []CPU             `json:"cpu"`
+	Memory    *Memory           `json:"memory"`
+	Disk      []Disk            `json:"disk"`
+	System    *System           `json:"system"`
 	Tags      map[string]string `json:"tags,omitempty"`
-}
-
-type MetricsPayload struct {
-	CPU    []CPU   `json:"cpu"`
-	Memory *Memory `json:"memory"`
-	Disk   []Disk  `json:"disk"`
-	System *System `json:"system"`
 }
 
 type CPU struct {

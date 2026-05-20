@@ -74,12 +74,12 @@ func (a *App) Run() error {
 			case <-stop:
 				return
 			case <-ticker.C:
-				metric, err := col.Collect()
+				metrics, err := col.Collect()
 				if err != nil {
 					continue
 				}
 				select {
-				case ch <- metric:
+				case ch <- *metrics:
 				default:
 					log.Println("metric dropped: queue full")
 				}

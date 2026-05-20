@@ -8,9 +8,7 @@ import (
 func TestMetricJSONSerialization(t *testing.T) {
 	m := Metric{
 		Host: "test",
-		Metrics: MetricsPayload{
-			CPU: []CPU{{Core: 0, Usage: 50.0}},
-		},
+		CPU:  []CPU{{Core: 0, Usage: 50.0}},
 		Tags: map[string]string{"env": "test"},
 	}
 
@@ -19,19 +17,19 @@ func TestMetricJSONSerialization(t *testing.T) {
 		t.Fatalf("Marshal() failed: %v", err)
 	}
 
-	var decoded Metric
-	err = json.Unmarshal(data, &decoded)
+	var metric Metric
+	err = json.Unmarshal(data, &metric)
 	if err != nil {
 		t.Fatalf("Unmarshal() failed: %v", err)
 	}
 
-	if decoded.Host != m.Host {
-		t.Errorf("expected host %s, got %s", m.Host, decoded.Host)
+	if metric.Host != m.Host {
+		t.Errorf("expected host %s, got %s", m.Host, metric.Host)
 	}
-	if len(decoded.Metrics.CPU) != 1 {
-		t.Errorf("expected 1 CPU metric, got %d", len(decoded.Metrics.CPU))
+	if len(metric.CPU) != 1 {
+		t.Errorf("expected 1 CPU metric, got %d", len(metric.CPU))
 	}
-	if decoded.Tags["env"] != "test" {
-		t.Errorf("expected tag env=test, got %v", decoded.Tags)
+	if metric.Tags["env"] != "test" {
+		t.Errorf("expected tag env=test, got %v", metric.Tags)
 	}
 }

@@ -25,7 +25,7 @@ func TestChannelSendReceive(t *testing.T) {
 	}()
 
 	received := make([]model.Metric, 0, 2)
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		m, ok := <-ch
 		if !ok {
 			t.Fatalf("unexpected channel close")
