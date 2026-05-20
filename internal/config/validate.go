@@ -22,5 +22,9 @@ func Validate(cfg *Config) error {
 		return errors.New("invalid endpoint: must not be empty")
 	}
 
+	if cfg.Exporter.Type == "http" && cfg.Exporter.HTTP.Timeout < 1 {
+		cfg.Exporter.HTTP.Timeout = defaultHTTPTimeout
+	}
+
 	return nil
 }

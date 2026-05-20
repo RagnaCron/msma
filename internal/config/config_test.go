@@ -7,9 +7,10 @@ import (
 
 func TestValidate(t *testing.T) {
 	tests := []struct {
-		name    string
-		cfg     *Config
-		wantErr bool
+		name        string
+		cfg         *Config
+		wantErr     bool
+		wantTimeout int64
 	}{
 		{
 			name: "valid config",
@@ -81,6 +82,38 @@ func TestValidate(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "http negative timeout clamped",
+			cfg: &Config{
+				IntervalSeconds: 5,
+				QueueSize:       10,
+				Exporter: ExporterConfig{
+					Type: "http",
+					HTTP: HTTPConfig{
+						Endpoint: "http://localhost:8080",
+						Timeout:  -10,
+					},
+				},
+			},
+			wantErr:     false,
+			wantTimeout: defaultHTTPTimeout,
+		},
+		{
+			name: "http zero timeout clamped",
+			cfg: &Config{
+				IntervalSeconds: 5,
+				QueueSize:       10,
+				Exporter: ExporterConfig{
+					Type: "http",
+					HTTP: HTTPConfig{
+						Endpoint: "http://localhost:8080",
+						Timeout:  0,
+					},
+				},
+			},
+			wantErr:     false,
+			wantTimeout: defaultHTTPTimeout,
+		},
 	}
 
 	for _, tt := range tests {
@@ -89,7 +122,27 @@ func TestValidate(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
 			}
+			if tt.wantTimeout != 0 && tt.cfg.Exporter.HTTP.Timeout != tt.wantTimeout {
+				t.Errorf("expected timeout %d, got %d", tt.wantTimeout, tt.cfg.Exporter.HTTP.Timeout)
+			}
 		})
+	}
+}
+
+func TestDefaultConfig(t *testing.T) {
+	cfg := defaultConfig()
+
+	if cfg.IntervalSeconds != 5 {
+		t.Errorf("expected interval 5, got %d", cfg.IntervalSeconds)
+	}
+	if cfg.QueueSize != 10 {
+		t.Errorf("expected queue size 10, got %d", cfg.QueueSize)
+	}
+	if cfg.Exporter.Type != "stdout" {
+		t.Errorf("expected exporter type stdout, got %s", cfg.Exporter.Type)
+	}
+	if cfg.Exporter.HTTP.Timeout != defaultHTTPTimeout {
+		t.Errorf("expected timeout %d, got %d", defaultHTTPTimeout, cfg.Exporter.HTTP.Timeout)
 	}
 }
 
@@ -102,6 +155,7 @@ func TestLoadEnvOverrides(t *testing.T) {
 	t.Setenv("AGENT_QUEUE_SIZE", "20")
 	t.Setenv("AGENT_EXPORTER_TYPE", "http")
 	t.Setenv("AGENT_HTTP_ENDPOINT", "http://test")
+	t.Setenv("AGENT_HTTP_TIMEOUT", "60")
 
 	cfg, err := Load()
 	if err != nil {
@@ -119,5 +173,8 @@ func TestLoadEnvOverrides(t *testing.T) {
 	}
 	if cfg.Exporter.HTTP.Endpoint != "http://test" {
 		t.Errorf("expected endpoint http://test, got %s", cfg.Exporter.HTTP.Endpoint)
+	}
+	if cfg.Exporter.HTTP.Timeout != 60 {
+		t.Errorf("expected timeout 60, got %d", cfg.Exporter.HTTP.Timeout)
 	}
 }
