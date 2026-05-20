@@ -11,6 +11,13 @@ import (
 	"github.com/ragnacron/msma/internal/model"
 )
 
+var (
+	getCPUMetricsFn       = getCPUMetrics
+	getMemoryMetricsFn    = getMemoryMetrics
+	getDiskMetricsFn      = getDiskMetrics
+	getSystemInfoMetricsFn = getSystemInfoMetrics
+)
+
 type Collector struct {
 	Host string
 }
@@ -131,7 +138,7 @@ func getCollectors() []collector {
 }
 
 func collectCPU(m *model.Metric) error {
-	cpu, err := getCPUMetrics()
+	cpu, err := getCPUMetricsFn()
 	if err != nil {
 		return err
 	}
@@ -142,7 +149,7 @@ func collectCPU(m *model.Metric) error {
 }
 
 func collectMem(m *model.Metric) error {
-	memory, err := getMemoryMetrics()
+	memory, err := getMemoryMetricsFn()
 	if err != nil {
 		return err
 	}
@@ -153,7 +160,7 @@ func collectMem(m *model.Metric) error {
 }
 
 func collectDisk(m *model.Metric) error {
-	disk, err := getDiskMetrics()
+	disk, err := getDiskMetricsFn()
 	if err != nil {
 		return err
 	}
@@ -164,7 +171,7 @@ func collectDisk(m *model.Metric) error {
 }
 
 func collectSysInfo(m *model.Metric) error {
-	sysInfo, err := getSystemInfoMetrics()
+	sysInfo, err := getSystemInfoMetricsFn()
 	if err != nil {
 		return err
 	}
