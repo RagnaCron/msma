@@ -11,10 +11,10 @@ type Metric struct {
 }
 
 type MetricsPayload struct {
-	CPU    []CPU  `json:"cpu"`
-	Memory Memory `json:"memory"`
-	Disk   []Disk `json:"disk"`
-	System System `json:"system"`
+	CPU    []CPU   `json:"cpu"`
+	Memory *Memory `json:"memory"`
+	Disk   []Disk  `json:"disk"`
+	System *System `json:"system"`
 }
 
 type CPU struct {
