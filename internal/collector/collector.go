@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	getCPUMetricsFn       = getCPUMetrics
-	getMemoryMetricsFn    = getMemoryMetrics
-	getDiskMetricsFn      = getDiskMetrics
+	getCPUMetricsFn        = getCPUMetrics
+	getMemoryMetricsFn     = getMemoryMetrics
+	getDiskMetricsFn       = getDiskMetrics
 	getSystemInfoMetricsFn = getSystemInfoMetrics
 )
 
