@@ -15,13 +15,10 @@ func TestNewUnsupportedExporter(t *testing.T) {
 		},
 	}
 
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("expected panic for unsupported exporter type")
-		}
-	}()
-
-	_ = New(cfg)
+	_, err := New(cfg)
+	if err == nil {
+		t.Errorf("expected error for unsupported exporter type")
+	}
 }
 
 func TestNewStdout(t *testing.T) {
@@ -32,7 +29,10 @@ func TestNewStdout(t *testing.T) {
 			Type: "stdout",
 		},
 	}
-	app := New(cfg)
+	app, err := New(cfg)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 	if app == nil {
 		t.Fatal("expected app to be created")
 	}
@@ -49,7 +49,10 @@ func TestNewHTTP(t *testing.T) {
 			},
 		},
 	}
-	app := New(cfg)
+	app, err := New(cfg)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 	if app == nil {
 		t.Fatal("expected app to be created")
 	}
