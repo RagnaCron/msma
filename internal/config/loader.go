@@ -9,7 +9,10 @@ import (
 	"go.yaml.in/yaml/v4"
 )
 
-const defaultConfigPath = "./.config/msma/config.yaml"
+const (
+	defaultConfigPath  = "./.config/msma/config.yaml"
+	defaultHTTPTimeout = 30
+)
 
 func Load() (*Config, error) {
 	cfg := defaultConfig()
@@ -35,6 +38,9 @@ func defaultConfig() *Config {
 		QueueSize:       10,
 		Exporter: ExporterConfig{
 			Type: "stdout",
+			HTTP: HTTPConfig{
+				Timeout: defaultHTTPTimeout,
+			},
 		},
 	}
 }
