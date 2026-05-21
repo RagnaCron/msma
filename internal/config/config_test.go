@@ -17,6 +17,7 @@ func TestValidate(t *testing.T) {
 			cfg: &Config{
 				IntervalSeconds: 5,
 				QueueSize:       10,
+				LogLevel:        "error",
 				Exporter: ExporterConfig{
 					Type: "stdout",
 				},
@@ -28,6 +29,7 @@ func TestValidate(t *testing.T) {
 			cfg: &Config{
 				IntervalSeconds: 5,
 				QueueSize:       0,
+				LogLevel:        "error",
 				Exporter: ExporterConfig{
 					Type: "stdout",
 				},
@@ -39,6 +41,7 @@ func TestValidate(t *testing.T) {
 			cfg: &Config{
 				IntervalSeconds: 0,
 				QueueSize:       10,
+				LogLevel:        "error",
 				Exporter: ExporterConfig{
 					Type: "stdout",
 				},
@@ -50,8 +53,21 @@ func TestValidate(t *testing.T) {
 			cfg: &Config{
 				IntervalSeconds: 5,
 				QueueSize:       10,
+				LogLevel:        "error",
 				Exporter: ExporterConfig{
 					Type: "kafka",
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalid log level",
+			cfg: &Config{
+				IntervalSeconds: 5,
+				QueueSize:       10,
+				LogLevel:        "info",
+				Exporter: ExporterConfig{
+					Type: "stdout",
 				},
 			},
 			wantErr: true,
@@ -61,6 +77,7 @@ func TestValidate(t *testing.T) {
 			cfg: &Config{
 				IntervalSeconds: 5,
 				QueueSize:       10,
+				LogLevel:        "error",
 				Exporter: ExporterConfig{
 					Type: "http",
 					HTTP: HTTPConfig{},
@@ -73,6 +90,7 @@ func TestValidate(t *testing.T) {
 			cfg: &Config{
 				IntervalSeconds: 5,
 				QueueSize:       10,
+				LogLevel:        "error",
 				Exporter: ExporterConfig{
 					Type: "http",
 					HTTP: HTTPConfig{
@@ -87,6 +105,7 @@ func TestValidate(t *testing.T) {
 			cfg: &Config{
 				IntervalSeconds: 5,
 				QueueSize:       10,
+				LogLevel:        "error",
 				Exporter: ExporterConfig{
 					Type: "http",
 					HTTP: HTTPConfig{
@@ -103,6 +122,7 @@ func TestValidate(t *testing.T) {
 			cfg: &Config{
 				IntervalSeconds: 5,
 				QueueSize:       10,
+				LogLevel:        "error",
 				Exporter: ExporterConfig{
 					Type: "http",
 					HTTP: HTTPConfig{
@@ -137,6 +157,9 @@ func TestDefaultConfig(t *testing.T) {
 	}
 	if cfg.QueueSize != 10 {
 		t.Errorf("expected queue size 10, got %d", cfg.QueueSize)
+	}
+	if cfg.LogLevel != "error" {
+		t.Errorf("expected log level to be 'error', got %s", cfg.LogLevel)
 	}
 	if cfg.Exporter.Type != "stdout" {
 		t.Errorf("expected exporter type stdout, got %s", cfg.Exporter.Type)

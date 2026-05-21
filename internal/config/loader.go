@@ -36,13 +36,13 @@ func defaultConfig() *Config {
 	return &Config{
 		IntervalSeconds: 5,
 		QueueSize:       10,
+		LogLevel:        "error",
 		Exporter: ExporterConfig{
 			Type: "stdout",
 			HTTP: HTTPConfig{
 				Timeout: defaultHTTPTimeout,
 			},
 		},
-		LogLevel: "error",
 	}
 }
 
