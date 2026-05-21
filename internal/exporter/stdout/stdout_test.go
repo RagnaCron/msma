@@ -21,7 +21,7 @@ func TestExport(t *testing.T) {
 		t.Fatalf("Export() failed: %v", err)
 	}
 
-	w.Close()
+	_ = w.Close()
 	out, _ := io.ReadAll(r)
 	os.Stdout = oldStdout
 
