@@ -180,6 +180,7 @@ func TestLoadEnvOverrides(t *testing.T) {
 	t.Setenv("AGENT_EXPORTER_TYPE", "http")
 	t.Setenv("AGENT_HTTP_ENDPOINT", "http://test")
 	t.Setenv("AGENT_HTTP_TIMEOUT", "60")
+	t.Setenv("AGENT_LOG_LEVEL", "debug")
 
 	cfg, err := Load()
 	if err != nil {
@@ -191,6 +192,9 @@ func TestLoadEnvOverrides(t *testing.T) {
 	}
 	if cfg.QueueSize != 20 {
 		t.Errorf("expected queue size 20, got %d", cfg.QueueSize)
+	}
+	if cfg.LogLevel != "debug" {
+		t.Errorf("expected log level to be 'debug', got %s", cfg.LogLevel)
 	}
 	if cfg.Exporter.Type != "http" {
 		t.Errorf("expected exporter type http, got %s", cfg.Exporter.Type)
