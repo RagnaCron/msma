@@ -3,7 +3,6 @@ package runtime
 
 import (
 	"errors"
-	"log"
 	"os"
 	"os/signal"
 	"sync"
@@ -64,7 +63,7 @@ func (a *App) Run() error {
 	wgExporter.Go(func() { // Exporter goroutine
 		for metric := range ch {
 			if err := a.Exporter.Export([]model.Metric{metric}); err != nil {
-				log.Printf("export failed: %v\n", err)
+				a.Logger.Error("export failed: %v\n", err)
 			}
 		}
 	})
@@ -84,17 +83,17 @@ func (a *App) Run() error {
 				select {
 				case ch <- *metrics:
 				default:
-					log.Println("metric dropped: queue full")
+					a.Logger.Debug("metric dropped: queue full")
 				}
 			}
 		}
 	})
 
 	<-sigCh // Block
-	log.Println("shutdown signal received")
+	a.Logger.Debug("shutdown signal received")
 
 	close(stop) // Stop Collector
-	log.Println("draining queue...")
+	a.Logger.Debug("draining queue...")
 	wgCollector.Wait()
 
 	close(ch) // Stop Channel
@@ -109,7 +108,7 @@ func (a *App) Run() error {
 	case <-time.After(5 * time.Second):
 		// timeout -> exit anyway
 	}
-	log.Println("shutdown complete")
+	a.Logger.Debug("shutdown complete")
 
 	return nil
 }
