@@ -4,6 +4,7 @@ package config
 type Config struct {
 	IntervalSeconds int            `yaml:"interval"`
 	QueueSize       int            `yaml:"queue_size"`
+	LogLevel        string         `yaml:"log_level"`
 	Exporter        ExporterConfig `yaml:"exporter"`
 }
 

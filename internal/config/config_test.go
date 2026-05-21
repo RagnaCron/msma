@@ -148,9 +148,10 @@ func TestDefaultConfig(t *testing.T) {
 
 func TestLoadEnvOverrides(t *testing.T) {
 	// Ensure no config file exists
-	os.Remove(defaultConfigPath)
-	defer os.Remove(defaultConfigPath)
-
+	_ = os.Remove(defaultConfigPath)
+	defer func() {
+		_ = os.Remove(defaultConfigPath)
+	}()
 	t.Setenv("AGENT_INTERVAL", "10")
 	t.Setenv("AGENT_QUEUE_SIZE", "20")
 	t.Setenv("AGENT_EXPORTER_TYPE", "http")

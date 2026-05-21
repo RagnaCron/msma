@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/ragnacron/msma/internal/config"
+	"github.com/ragnacron/msma/internal/logging"
 	"github.com/ragnacron/msma/internal/runtime"
 )
 
@@ -15,7 +16,9 @@ func main() {
 		log.Fatalln(fmt.Errorf("error loading config: %w", err))
 	}
 
-	app, err := runtime.New(cfg)
+	logger := logging.New(cfg.LogLevel, nil)
+
+	app, err := runtime.New(cfg, logger)
 	if err != nil {
 		log.Fatalln(fmt.Errorf("error starting runtime: %w", err))
 	}

@@ -15,6 +15,7 @@ import (
 	"github.com/ragnacron/msma/internal/exporter"
 	"github.com/ragnacron/msma/internal/exporter/http"
 	"github.com/ragnacron/msma/internal/exporter/stdout"
+	"github.com/ragnacron/msma/internal/logging"
 	"github.com/ragnacron/msma/internal/model"
 	"github.com/ragnacron/msma/internal/queue"
 )
@@ -22,10 +23,11 @@ import (
 type App struct {
 	Config   *config.Config
 	Queue    *queue.Queue
+	Logger   *logging.Logger
 	Exporter exporter.Exporter
 }
 
-func New(cfg *config.Config) (*App, error) {
+func New(cfg *config.Config, l *logging.Logger) (*App, error) {
 	var e exporter.Exporter
 
 	switch cfg.Exporter.Type {
@@ -40,6 +42,7 @@ func New(cfg *config.Config) (*App, error) {
 	return &App{
 		Config:   cfg,
 		Queue:    queue.New(cfg.QueueSize),
+		Logger:   l,
 		Exporter: e,
 	}, nil
 }

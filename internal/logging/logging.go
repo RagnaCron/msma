@@ -21,10 +21,12 @@ type Logger struct {
 	level Level
 }
 
-func New(level Level, w io.Writer) *Logger {
+func New(s string, w io.Writer) *Logger {
 	if w == nil {
 		w = os.Stdout
 	}
+
+	level := parseLevel(s)
 
 	return &Logger{
 		Logger: log.New(w, "", log.LstdFlags),
@@ -32,7 +34,7 @@ func New(level Level, w io.Writer) *Logger {
 	}
 }
 
-func ParseLevel(s string) Level {
+func parseLevel(s string) Level {
 	switch strings.ToLower(s) {
 	case "debug":
 		return LevelDebug

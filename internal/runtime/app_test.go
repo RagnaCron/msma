@@ -4,18 +4,22 @@ import (
 	"testing"
 
 	"github.com/ragnacron/msma/internal/config"
+	"github.com/ragnacron/msma/internal/logging"
 )
 
 func TestNewUnsupportedExporter(t *testing.T) {
 	cfg := &config.Config{
 		IntervalSeconds: 1,
 		QueueSize:       10,
+		LogLevel:        "debug",
 		Exporter: config.ExporterConfig{
 			Type: "kafka",
 		},
 	}
 
-	_, err := New(cfg)
+	l := logging.New(cfg.LogLevel, nil)
+
+	_, err := New(cfg, l)
 	if err == nil {
 		t.Errorf("expected error for unsupported exporter type")
 	}
@@ -25,11 +29,13 @@ func TestNewStdout(t *testing.T) {
 	cfg := &config.Config{
 		IntervalSeconds: 1,
 		QueueSize:       10,
+		LogLevel:        "debug",
 		Exporter: config.ExporterConfig{
 			Type: "stdout",
 		},
 	}
-	app, err := New(cfg)
+	l := logging.New(cfg.LogLevel, nil)
+	app, err := New(cfg, l)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -42,6 +48,7 @@ func TestNewHTTP(t *testing.T) {
 	cfg := &config.Config{
 		IntervalSeconds: 1,
 		QueueSize:       10,
+		LogLevel:        "debug",
 		Exporter: config.ExporterConfig{
 			Type: "http",
 			HTTP: config.HTTPConfig{
@@ -49,7 +56,8 @@ func TestNewHTTP(t *testing.T) {
 			},
 		},
 	}
-	app, err := New(cfg)
+	l := logging.New(cfg.LogLevel, nil)
+	app, err := New(cfg, l)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

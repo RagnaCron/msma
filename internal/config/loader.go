@@ -42,6 +42,7 @@ func defaultConfig() *Config {
 				Timeout: defaultHTTPTimeout,
 			},
 		},
+		LogLevel: "error",
 	}
 }
 
@@ -74,8 +75,12 @@ func applyEnvOverrides(cfg *Config) error {
 		cfg.QueueSize = integer
 	}
 
+	if logLevel := os.Getenv("AGENT_LOG_LEVEL"); logLevel != "" {
+		cfg.LogLevel = logLevel
+	}
+
 	if eType := os.Getenv("AGENT_EXPORTER_TYPE"); eType != "" {
-		cfg.Exporter.Type = eType
+		cfg.Exporter.Type = eType // todo: this Type should be an enum
 	}
 
 	if endpoint := os.Getenv("AGENT_HTTP_ENDPOINT"); endpoint != "" {

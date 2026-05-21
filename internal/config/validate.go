@@ -14,6 +14,11 @@ func Validate(cfg *Config) error {
 		return errors.New("invalid interval: must be > 0")
 	}
 
+	if cfg.LogLevel != "debug" && cfg.LogLevel != "error" {
+		return errors.New("invalid log level: must be 'debug' or 'error'")
+	}
+
+	// todo: type check - enum for the type. would make things simpler for expansion of different exporters
 	if cfg.Exporter.Type != "stdout" && cfg.Exporter.Type != "http" {
 		return errors.New("invalid type: must be stdout or http")
 	}
