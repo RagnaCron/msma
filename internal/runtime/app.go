@@ -33,7 +33,7 @@ func New(cfg *config.Config, l *logging.Logger) (*App, error) {
 	case "stdout":
 		e = stdout.New()
 	case "http":
-		e = http.NewHTTP(cfg.Exporter.HTTP.Endpoint, cfg.Exporter.HTTP.Timeout)
+		e = http.NewHTTP(cfg.Exporter.HTTP.Endpoint, cfg.Exporter.HTTP.Timeout, l)
 	default:
 		return nil, errors.New("unsupported exporter type")
 	}

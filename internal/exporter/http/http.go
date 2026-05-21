@@ -8,20 +8,23 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ragnacron/msma/internal/logging"
 	"github.com/ragnacron/msma/internal/model"
 )
 
 type HTTPExporter struct {
 	Endpoint string
 	Client   *http.Client
+	logger   *logging.Logger
 }
 
-func NewHTTP(endpoint string, timeout int64) *HTTPExporter {
+func NewHTTP(endpoint string, timeout int64, l *logging.Logger) *HTTPExporter {
 	return &HTTPExporter{
 		Endpoint: endpoint,
 		Client: &http.Client{
 			Timeout: time.Duration(timeout * int64(time.Second)),
 		},
+		logger: l,
 	}
 }
 
@@ -50,6 +53,8 @@ func (h *HTTPExporter) Export(metrics []model.Metric) error {
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		return fmt.Errorf("error status code: %d", res.StatusCode)
 	}
+
+	h.logger.Debug("export successfull\n")
 
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/ragnacron/msma/internal/logging"
 	"github.com/ragnacron/msma/internal/model"
 )
 
@@ -23,7 +24,9 @@ func TestExport(t *testing.T) {
 	}))
 	defer server.Close()
 
-	exporter := NewHTTP(server.URL, 10)
+	l := logging.New("debug", nil)
+
+	exporter := NewHTTP(server.URL, 10, l)
 	err := exporter.Export([]model.Metric{{Host: "test"}})
 	if err != nil {
 		t.Fatalf("Export() failed: %v", err)
@@ -40,7 +43,9 @@ func TestExportError(t *testing.T) {
 	}))
 	defer server.Close()
 
-	exporter := NewHTTP(server.URL, 10)
+	l := logging.New("debug", nil)
+
+	exporter := NewHTTP(server.URL, 10, l)
 	err := exporter.Export([]model.Metric{{Host: "test"}})
 	if err == nil {
 		t.Fatal("expected error, got nil")
@@ -48,7 +53,8 @@ func TestExportError(t *testing.T) {
 }
 
 func TestExportInvalidURL(t *testing.T) {
-	exporter := NewHTTP("://invalid-url", 10)
+	l := logging.New("debug", nil)
+	exporter := NewHTTP("://invalid-url", 10, l)
 	err := exporter.Export([]model.Metric{{Host: "test"}})
 	if err == nil {
 		t.Fatal("expected error, got nil")
