@@ -13,6 +13,32 @@ beyond gopsutil, and under 1000 lines of code. It's designed for environments
 where you need to ship metrics to a custom endpoint without running a full
 monitoring stack.
 
+## Quick Start
+
+```bash
+# Install
+go install github.com/RagnaCron/msma@latest
+```
+
+```bash
+# Run with defaults
+msma
+```
+
+```bash
+# Run with HTTP exporter
+cd ~/.config/msma
+cat << EOF > config.yaml
+exporter:
+  type: http
+  http:
+    endpoint: http://localhost:8081/metrics
+    timeout: 30
+EOF
+./msma
+
+```
+
 ## Features
 
 - Concurrent collection using four parallel subsystem readers
@@ -31,7 +57,7 @@ make run     # build and run
 make clean   # remove binary
 ```
 
-## Configuration
+## Configuration and Usage
 
 Config is loaded from three sources in order:
 defaults → YAML file → environment variables.
@@ -128,7 +154,8 @@ The agent starts two goroutines:
 1. **Collector** — reads metrics on a ticker interval, sends to the bounded channel
 2. **Exporter** — reads from the channel and exports
 
-On SIGINT/SIGTERM: the collector stops first, then the channel is closed and the exporter drains remaining metrics. The exporter has a 5-second shutdown timeout.
+On SIGINT/SIGTERM: the collector stops first, then the channel is closed and the
+exporter drains remaining metrics. The exporter has a 5-second shutdown timeout.
 
 ## Testing
 
