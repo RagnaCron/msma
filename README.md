@@ -3,6 +3,16 @@
 A lightweight Go daemon that collects host-level metrics (CPU, memory, disk,
 uptime, kernel) and exports them via stdout or HTTP.
 
+## Motivation
+
+System metrics agents tend to be either heavy (Prometheus node_exporter with
+dozens of collectors) or nonexistent. This project sits in the gap: a single
+binary that collects CPU, memory, disk, and kernel info, exports them as JSON
+via stdout or HTTP, and does it with no framework, no external dependencies
+beyond gopsutil, and under 1000 lines of code. It's designed for environments
+where you need to ship metrics to a custom endpoint without running a full
+monitoring stack.
+
 ## Features
 
 - Concurrent collection using four parallel subsystem readers
