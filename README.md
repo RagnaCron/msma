@@ -138,4 +138,31 @@ make test   # runs all tests with -race flag
 
 ## CI
 
-GitHub Actions runs `gofmt`, `go vet`, `go test -race`, and `go build` on every push.
+GitHub Actions runs `gofmt`, `go vet`, `go test -race`, and `go build`
+on every push.
+
+## 🤝 Contributing
+
+### Clone the repo
+
+```bash
+git clone https://github.com/RagnaCron/msma.git
+cd msma
+```
+
+### Run the test suite
+
+```bash
+make test
+```
+
+### Build the compiled binary
+
+```bash
+make build
+```
+
+### Submit a pull request
+
+If you'd like to contribute, please fork the repository and open a pull request
+to the `main` branch.
