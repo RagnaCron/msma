@@ -25,20 +25,6 @@ go install github.com/RagnaCron/msma@latest
 msma
 ```
 
-```bash
-# Run with HTTP exporter
-cd ~/.config/msma
-cat << EOF > config.yaml
-exporter:
-  type: http
-  http:
-    endpoint: http://localhost:8081/metrics
-    timeout: 30
-EOF
-./msma
-
-```
-
 ## Features
 
 - Concurrent collection using four parallel subsystem readers
